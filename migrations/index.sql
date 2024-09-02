@@ -37,7 +37,7 @@ CREATE TABLE report(
 	modified_by VARCHAR(20) NOT NULL,
 	modified_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	active BOOLEAN NOT NULL DEFAULT TRUE
-)
+);
 
 CREATE TABLE prescription_list(
 	id BIGSERIAL PRIMARY KEY,
@@ -52,4 +52,98 @@ CREATE TABLE prescription_list(
 	modified_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	active BOOLEAN NOT NULL DEFAULT TRUE,
 	FOREIGN KEY(prescription_master_lid) REFERENCES prescription_master(id)
-)
+);
+
+-- DROP FUNCTION insert_prescription_data(jsonb,character varying);
+CREATE OR REPLACE FUNCTION insert_prescription_data(data JSONB, created_by VARCHAR)
+    RETURNS jsonb
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $BODY$
+DECLARE
+    master_id BIGINT;
+    prescription JSONB;
+    report JSONB;
+    timing JSONB;
+    timing_entry JSONB;
+BEGIN
+
+    INSERT INTO prescription_master (
+        name, phone, illness, voice_note, created_by, modified_by
+    )
+    VALUES (
+        data->>'patient_name',
+        data->>'patient_no',
+        data->>'voice_path',
+		data->>'illness',
+        created_by,
+        created_by
+    )
+    RETURNING id INTO master_id;
+
+    FOR prescription IN SELECT * FROM jsonb_array_elements(data->'prescription')
+    LOOP
+        INSERT INTO prescription_list (
+            prescription_master_lid, description, medicine_name, timings, created_by, modified_by
+        )
+        VALUES (
+            master_id,
+            prescription->>'prescription_detail',
+            prescription->>'medicine_name',
+            prescription->'timing',
+            created_by,
+            created_by
+        );
+    END LOOP;
+
+    FOR report IN SELECT * FROM jsonb_array_elements(data->'required_report')
+    LOOP
+        INSERT INTO report (
+            phone, name, prescription_master_lid, report_path, created_by, modified_by
+        )
+        VALUES (
+            created_by,
+            report->>'report_name',
+            master_id,
+            report->>'file_path',
+            created_by,
+            created_by
+        );
+    END LOOP;
+	
+	RETURN '{"status": 200, "message": "Prescription Added Successfully!"}';
+END;
+$BODY$;
+
+SELECT * FROM insert_prescription_data(
+'{
+  "patient_name" : "rana das",
+  "patient_no" : "9876543211",
+  "illness" : "cough",
+  "prescription" : 
+  [
+    {
+      "prescription_detail" : "xyz",
+      "medicine_name" : "abc",
+      "timing":[{"breakfast" : "before"}, {"lunch":null},{"dinner":"after"}]
+    },
+    {
+      "prescription_detail" : "xabc",
+      "medicine_name" : "axyz",
+      "timing":[{"breakfast" : "before"}, {"lunch":null},{"dinner":"after"}]
+    }
+  ],
+  "required_report":
+  [
+    {
+      "file_path":"abcdxyz",
+      "report_name":"AAAA"
+    },
+    {
+      "file_path":"bmwass",
+      "report_name":"BBBB"
+    }
+  ],
+  "voice_path":"hghhgjoho"
+}', '');
