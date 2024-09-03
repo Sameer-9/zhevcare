@@ -52,6 +52,7 @@ const registerUser = async (req, res, role) => {
 
   try {
     const existingUser = await findOne({ phone });
+    console.log("existingUser", existingUser);
     if (existingUser) {
       return res
         .status(400)
@@ -91,6 +92,14 @@ const registerUser = async (req, res, role) => {
  * @route POST /register/patient
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
+ * sample json body
+ * {
+    "name": "Sameer Shaikh",
+    "phone": "8879338546",
+    "email": "sameer.shaikh.EXT@nmims.edu",
+    "password": "pass@123",
+    "confirmPassword": "pass@123"
+  }
  */
 export const registerPatient = (req, res) => registerUser(req, res, "PATIENT");
 
@@ -99,6 +108,15 @@ export const registerPatient = (req, res) => registerUser(req, res, "PATIENT");
  * @route POST /register/doctor
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
+ * sample json body
+ * {
+    "name": "Sameer Shaikh",
+    "phone": "8879338546",
+    "email": "sameer.shaikh.EXT@nmims.edu",
+    "password": "pass@123",
+    "confirmPassword": "pass@123",
+    "registrationNo": "121212"
+  }
  */
 export const registerDoctor = (req, res) => registerUser(req, res, "DOCTOR");
 
@@ -132,20 +150,15 @@ export const authenticate = async (req, res) => {
     // Generate JWT
     const token = generateToken(user);
 
+    console.log("token", token);
     // Store the token in Redis with an expiration of 1 day
-    redisClient.setex(user._id.toString(), 86400, token, (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ success: false, message: "Internal Server Error" });
-      }
-
-      // Send token in response header
-      res.setHeader("token", token);
-      return res
-        .status(200)
-        .json({ success: true, message: "User authenticated" });
-    });
+    await redisClient.setEx(JSON.stringify(user), 86400, token);
+  
+    // Send token in response header
+    res.setHeader("token", token);
+    return res
+      .status(200)
+      .json({ success: true, message: "User authenticated" });
   } catch (error) {
     console.error("Authentication error:", error);
     return res

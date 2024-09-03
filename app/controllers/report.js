@@ -6,8 +6,8 @@ export const history = async (req, res) => {
     const user = req.user;
 
     const query = {
-      cursor: req.query.cursor,
-      search: req.query.search,
+      cursor: req.query.cursor || null,
+      search: req.query.search || "",
       filters: {
         name: req.query.name,
         doctor_name: req.query.doctor_name,
@@ -18,7 +18,11 @@ export const history = async (req, res) => {
       },
     };
 
-    const reports = await getHistory(query);
+    const reports = await getHistory({
+      cursor: query.cursor,
+      search: query.search,
+      filters: query.filters
+    });
     return res.status(200).json(reports);
   } catch (error) {
     console.error("Report list error:", error);
@@ -28,10 +32,15 @@ export const history = async (req, res) => {
 
 export const report = async (req, res) => {
   try {
-    const { cursor, search, filters } = req.query;
+    const { cursor, search } = req.query;
     const user = req.user;
-
-    filters.session_phone = user.phone;
+    console.log("user", user);
+    const filters = {
+      name: req.query.name,
+      date: req.query.date,
+      phone: req.query.phone,
+      session_phone: user.phone,
+    };
 
     const reports = await getReport({ cursor, search, filters });
     return res.status(200).json(reports);

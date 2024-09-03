@@ -1,7 +1,7 @@
 import sql from "../config/db.js";
 
 export const findOne = async ({ phone }) => {
-  const data = await sql`SELECT * FROM public.user WHERE email = ${phone}`;
+  const data = await sql`SELECT * FROM public.user WHERE phone = ${phone}`;
   return data[0];
 };
 

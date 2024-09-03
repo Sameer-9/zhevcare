@@ -1,10 +1,14 @@
+import jwt from "jsonwebtoken";
+
 export const authMiddleware = (req, res, next) => {
   const { token } = {
-    ...req.body.token,
-    ...req.headers.token,
-    ...req.query.token,
-    ...req.cookies.token,
+    ...req.body,
+    ...req.headers,
+    ...req.query,
+    ...req.cookies,
   };
+
+  console.log(token);
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -12,9 +16,11 @@ export const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user;
+    console.log("decoded", decoded);
+    req.user = decoded;
     next();
   } catch (error) {
+    console.log("JWT verify error:", error);
     return res.status(401).json({ message: "Unauthorized" });
   }
 };
