@@ -5,6 +5,7 @@ CREATE TABLE public.user(
 	id BIGSERIAL PRIMARY KEY,
 	name VARCHAR(200) NOT NULL,
 	phone VARCHAR(20) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
 	email VARCHAR(50),
   address VARCHAR(255),
   specalizacion VARCHAR(100),
@@ -56,6 +57,16 @@ CREATE TABLE prescription_list(
 	modified_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	active BOOLEAN NOT NULL DEFAULT TRUE,
 	FOREIGN KEY(prescription_master_lid) REFERENCES prescription_master(id)
+);
+
+CREATE TABLE otp (
+    id BIGSERIAL PRIMARY KEY,
+    phone VARCHAR(255) NOT NULL,
+    otp INT NOT NULL,
+    service_name VARCHAR(255) NOT NULL,
+	  valid_till TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '15 minutes')
+    created_by VARCHAR(20) NOT NULL,
+    created_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),  
 );
 
 -- DROP FUNCTION insert_prescription_data(jsonb,character varying);
