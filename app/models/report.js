@@ -1,12 +1,13 @@
 import { infiniteScrollQueryBuilderWithPlaceholder } from "../utils/db/db-helper.js";
 
 export const getHistory = async ({ cursor, search = "", filters }) => {
+  console.log("Filters", filters);
   const data = await infiniteScrollQueryBuilderWithPlaceholder({
     baseQuery: `SELECT
                         pm.created_date AS date,
                         pm.name AS name,
                         pm.created_by AS doctor_name,
-                        pl.illness,
+                        pm.illness,
                         json_agg(
                             json_build_object(
                                 'report_name', r.name,
@@ -15,9 +16,10 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
                         ) AS reports
                     FROM prescription_master pm
                     JOIN prescription_list pl ON pm.id = pl.prescription_master_lid
-                    LEFT JOIN report r ON pm.id = r.prescription_master_lid
+                  LEFT JOIN report r ON pm.id = r.prescription_master_lid
+
                     $PLACEHOLDER `,
-    placeholder: [
+    placeholders: [
       {
         placeholder: "$PLACEHOLDER",
         filters: {
@@ -34,23 +36,23 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
                     AND r.active = TRUE `,
         groupBy: [
           "pm.id",
-          "pl.illness",
+          "pm.illness",
           "pm.created_by",
           "pm.created_date",
           "pm.name",
         ],
         orderBy: {
-          column: "pm.created_date",
+          column: "pm.id",
           order: "desc",
         },
-        searchColumns: ["pm.name", "pm.created_by", "pl.illness", "pm.phone"],
+        searchColumns: ["pm.name", "pm.created_by", "pm.illness", "pm.phone"],
       },
     ],
     cursor: {
       column: "pm.id",
       value: cursor,
     },
-    includeTotalCount: true,
+    includeTotalCount: false,
     search: search,
   });
 
@@ -62,7 +64,7 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
 export const getReport = async ({ cursor, search = "", filters }) => {
   const data = await infiniteScrollQueryBuilderWithPlaceholder({
     baseQuery: `SELECT * FROM report r $PLACEHOLDER`,
-    placeholder: [
+    placeholders: [
       {
         placeholder: "$PLACEHOLDER",
         filters: {
@@ -88,13 +90,15 @@ export const getReport = async ({ cursor, search = "", filters }) => {
   return data;
 };
 
-export const insertPrescriptionModal = async (prescriptionJson, user ) => {
-  const data = await sql`SELECT * FROM public.insert_prescription_data(${prescriptionJson}, ${user})`;
+export const insertPrescriptionModal = async (prescriptionJson, user) => {
+  const data =
+    await sql`SELECT * FROM public.insert_prescription_data(${prescriptionJson}, ${user})`;
   return data[0];
 };
 
-export const soloReportModal = async (reportData, user ) => {
-  const data = await sql`INSERT INTO report(phone, name, report_path, created_by, modified_by)
+export const soloReportModal = async (reportData, user) => {
+  const data =
+    await sql`INSERT INTO report(phone, name, report_path, created_by, modified_by)
                           VALUES(${user}, ${reportData.name}, ${reportData.report_path}, ${user}, ${user})`;
   return data[0];
 };

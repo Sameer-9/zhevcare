@@ -5,9 +5,9 @@ import { authMiddleware } from "../middleware/auth.js";
 export const reportRouter = Router();
 
 //! Report routes
-reportRouter.get("/history", history);
+reportRouter.get("/history", authMiddleware, history);
 reportRouter.get("/report", authMiddleware, report);
-reportRouter.get("/prescription", authMiddleware, insertPrescription);
+reportRouter.post("/prescription", authMiddleware, insertPrescription);
 
 //! User routes
-reportRouter.get("/update-profile", authMiddleware, updateProfile);
+reportRouter.post("/update-profile", authMiddleware, updateProfile);

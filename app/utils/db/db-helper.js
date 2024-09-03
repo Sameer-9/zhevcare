@@ -215,29 +215,21 @@ export const infiniteScrollQueryBuilderWithPlaceholder = async ({
                 replacement += ' ' + (replacement.toLowerCase().includes('where') ? ' AND ' : ' WHERE ') + searchCondition;
             }
         }
-
         query = query.replace(placeholder, replacement);
     });
 
     // Add cursor-based pagination
-    if (cursor) {
+    if (cursor && cursor.value) {
         values.push(cursor.value);
         query +=
             (query.toLowerCase().includes('where') ? ' AND ' : ' WHERE ') +
             `${cursor.column} ${placeholders.find((p) => p.orderBy)?.orderBy?.order === 'asc' ? '>' : '<'} $${values.length}`;
     }
 
-    // Adding sorting
-    const orderBy = placeholders.find((p) => p.orderBy)?.orderBy;
-    if (orderBy) {
-        query += ` ORDER BY ${orderBy.column} ${orderBy.order.toUpperCase()}`;
-    }
-
     // Adding limit
     const limit = process.env.DEFAULT_LIMIT;
     values.push(limit);
     query += ` LIMIT $${values.length}`;
-
     let totalCount = 0;
     if (includeTotalCount) {
         // Construct the total count query without cursor and limit
@@ -256,6 +248,8 @@ export const infiniteScrollQueryBuilderWithPlaceholder = async ({
             nextCursor: dataRes.length ? dataRes[orderBy?.order === 'asc' ? 0 : dataRes.length - 1].id : null,
         };
     } else {
+        console.log('Query:', query);
+        console.log('Values:', values);
         const dataRes = await sql.unsafe(query, values);
         return {
             data: dataRes,
@@ -265,3 +259,18 @@ export const infiniteScrollQueryBuilderWithPlaceholder = async ({
         };
     }
 };
+
+export const formatQueryWithValues = (query, values) => {
+    let formattedQuery = query;
+ 
+    values.forEach((value, index) => {
+       // Convert value to string and escape single quotes
+       const valueStr = typeof value === 'string' ? `'${value.replace(/'/g, "''")}'` : value;
+ 
+       // Replace the placeholder with the value
+       formattedQuery = formattedQuery.replace(`$${index + 1}`, valueStr.toString());
+    });
+ 
+    console.log('Formatted SQL Query:', formattedQuery);
+ };
+ 

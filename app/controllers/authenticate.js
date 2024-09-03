@@ -150,20 +150,15 @@ export const authenticate = async (req, res) => {
     // Generate JWT
     const token = generateToken(user);
 
+    console.log("token", token);
     // Store the token in Redis with an expiration of 1 day
-    redisClient.setex(JSON.stringify(user), 86400, token, (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ success: false, message: "Internal Server Error" });
-      }
-
-      // Send token in response header
-      res.setHeader("token", token);
-      return res
-        .status(200)
-        .json({ success: true, message: "User authenticated" });
-    });
+    await redisClient.setEx(JSON.stringify(user), 86400, token);
+  
+    // Send token in response header
+    res.setHeader("token", token);
+    return res
+      .status(200)
+      .json({ success: true, message: "User authenticated" });
   } catch (error) {
     console.error("Authentication error:", error);
     return res
