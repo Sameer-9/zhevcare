@@ -18,6 +18,7 @@ CREATE TABLE prescription_master(
 	id BIGSERIAL PRIMARY KEY,
 	name NOT NULL,
 	phone NOT NULL,
+  illness TEXT NOT NULL,
 	voice_note VARCHAR(255),
 	created_by VARCHAR(20) NOT NULL,
 	created_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -42,7 +43,6 @@ CREATE TABLE report(
 CREATE TABLE prescription_list(
 	id BIGSERIAL PRIMARY KEY,
 	prescription_master_lid INT NOT NULL,
-	illness TEXT NOT NULL,
 	description TEXT NOT NULL,
 	medicine_name VARCHAR(255) NOT NULL,
 	timings JSONB NOT NULL,
