@@ -1,5 +1,5 @@
-import { getHistory, getReport, insertPrescriptionModal, soloReportModal } from "../models/report";
-import { updateProfileModal } from "../models/user";
+import { getHistory, getReport, insertPrescriptionModal, soloReportModal } from "../models/report.js";
+import { updateProfileModal } from "../models/user.js";
 
 export const history = async (req, res) => {
   try {

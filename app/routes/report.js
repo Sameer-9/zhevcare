@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { history, insertPrescription, report, updateProfile } from "../controllers/report";
-import { authMiddleware } from "../middleware/auth";
+import { history, insertPrescription, report, updateProfile } from "../controllers/report.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 export const reportRouter = Router();
 

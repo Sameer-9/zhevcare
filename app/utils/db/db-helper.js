@@ -1,4 +1,4 @@
-const { default: sql } = require("../../config/db");
+import sql from "../../config/db.js";
 
 /**
  * @typedef {Object} FilterConditions
@@ -179,7 +179,7 @@ const paginationQueryBuilderWithPlaceholder = async ({
  * @param {boolean} [params.includeTotalCount=false] - Whether to include total count in the result.
  * @returns {Promise<Object>} The query result containing data, possibly total count, and next cursor.
  */
-const infiniteScrollQueryBuilderWithPlaceholder = async ({
+export const infiniteScrollQueryBuilderWithPlaceholder = async ({
     baseQuery,
     placeholders = [],
     cursor,
@@ -264,15 +264,4 @@ const infiniteScrollQueryBuilderWithPlaceholder = async ({
                 : null,
         };
     }
-};
-
-module.exports = {
-    buildFilterConditions,
-    buildSearchCondition,
-    buildGroupByClause,
-    buildHavingClause,
-    buildOrderByClause,
-    buildWhereClause,
-    paginationQueryBuilderWithPlaceholder,
-    infiniteScrollQueryBuilderWithPlaceholder,
 };

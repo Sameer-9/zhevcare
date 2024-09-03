@@ -1,4 +1,4 @@
-import { infiniteScrollQueryBuilderWithPlaceholder } from "../utils/db/db-helper";
+import { infiniteScrollQueryBuilderWithPlaceholder } from "../utils/db/db-helper.js";
 
 export const getHistory = async ({ cursor, search = "", filters }) => {
   const data = await infiniteScrollQueryBuilderWithPlaceholder({
