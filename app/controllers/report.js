@@ -1,4 +1,5 @@
-import { getHistory, getReport } from "../models/report";
+import { getHistory, getReport, insertPrescriptionModal, soloReportModal } from "../models/report";
+import { updateProfileModal } from "../models/user";
 
 export const history = async (req, res) => {
   try {
@@ -34,6 +35,49 @@ export const report = async (req, res) => {
 
     const reports = await getReport({ cursor, search, filters });
     return res.status(200).json(reports);
+  } catch (error) {
+    console.error("Report list error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const insertPrescription = async (req, res) => {
+  try {
+    const prescriptionJson = req.body;
+    const user = req.user.phone;
+
+    const reports = await insertPrescriptionModal(prescriptionJson, user);
+    return res.status(200).json(reports);
+  } catch (error) {
+    console.error("Report list error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userData = req.body;
+    const user = req.user.phone;
+
+    const reports = await updateProfileModal(userData, user);
+    return res.status(200).json({
+      message:"Profile updated successfully"
+    });
+  } catch (error) {
+    console.error("Report list error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const soloReport = async (req, res) => {
+  try {
+    const reportData = req.body;
+    const user = req.user.phone;
+
+    const reports = await soloReportModal(reportData, user);
+    return res.status(200).json({
+      message:"Report saved successfully"
+    });
   } catch (error) {
     console.error("Report list error:", error);
     return res.status(500).json({ message: "Internal server error" });

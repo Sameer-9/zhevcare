@@ -87,3 +87,14 @@ export const getReport = async ({ cursor, search = "", filters }) => {
 
   return data;
 };
+
+export const insertPrescriptionModal = async (prescriptionJson, user ) => {
+  const data = await sql`SELECT * FROM public.insert_prescription_data(${prescriptionJson}, ${user})`;
+  return data[0];
+};
+
+export const soloReportModal = async (reportData, user ) => {
+  const data = await sql`INSERT INTO report(phone, name, report_path, created_by, modified_by)
+                          VALUES(${user}, ${reportData.name}, ${reportData.report_path}, ${user}, ${user})`;
+  return data[0];
+};
