@@ -99,7 +99,6 @@ const paginationQueryBuilderWithPlaceholder = async ({
     page = 1,
     pageSize = 10,
     search = '',
-    searchColumns = [],
     includeTotalCount = false,
 }) => {
     let query = baseQuery;
@@ -109,7 +108,7 @@ const paginationQueryBuilderWithPlaceholder = async ({
     const defaultWhereClause = ' WHERE 1=1 ';
 
     // Replace placeholders with actual conditions
-    placeholders.forEach(({ placeholder, filters, groupBy, having, orderBy, defaultFilters }) => {
+    placeholders.forEach(({ placeholder, filters, groupBy, having, orderBy, defaultFilters, searchColumns }) => {
         let replacement = defaultFilters || defaultWhereClause;
 
         if (filters) {
