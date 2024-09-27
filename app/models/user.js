@@ -38,7 +38,7 @@ export const insertOTPModal = async (OTP, user, serviceName ) => {
 
 export const otpModal = async (id, otp) => {
   const data = await sql`SELECT phone FROM otp WHERE id = ${id} 
-                          AND valid_till > NOW() AND otp = ${otp}`;
+                          AND valid_till < NOW() AND otp = ${otp}`;
   return data;
 };
 

@@ -226,7 +226,7 @@ export const changePassword = async (req, res) => {
   const phone = otpModal(id, otp);
   if(phone) {
     if(password == confirmPassword){
-      updatePasswordModal(password, phone);
+      updatePasswordModal(password, phone[0].phone);
     }else{
       return res.status(403).json({ success: true, message: "Password do not Match" });
     }
