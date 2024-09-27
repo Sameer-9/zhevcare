@@ -223,11 +223,10 @@ export const forgotPassword = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   const { otp, id, password, confirmPassword } = req.body;
-  const otpId = otpModal(id, otp );
-  const user = req.user.phone;
-  if(user) {
+  const phone = otpModal(id, otp);
+  if(phone) {
     if(password == confirmPassword){
-      updatePasswordModal(password, user);
+      updatePasswordModal(password, phone);
     }else{
       return res.status(403).json({ success: true, message: "Password do not Match" });
     }
