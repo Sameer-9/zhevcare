@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
-import { findOne, insertOTPModal, otpModal, save } from "../models/user.js";
+import { findOne, insertOTPModal, otpModal, save, updatePasswordModal } from "../models/user.js";
 import redisClient from "../config/redis.js";
 import { verifyRegistrationNo } from "../services/index.js";
 import { sendEmail } from "../services/mail.service.js";
@@ -222,12 +222,13 @@ export const forgotPassword = async (req, res) => {
 }
 
 export const changePassword = async (req, res) => {
-  const { otp, id, password, confirmPassword, user } = req.body;
-  const otpId = otpModal(id, otp, )
+  const { otp, id, password, confirmPassword } = req.body;
+  const otpId = otpModal(id, otp );
+  const user = req.user.phone;
   if(user) {
-    let otp = Math.floor(100000 + Math.random() * 900000);
-    let otpId = insertOTP(otp, phone, 'forgot_password');
-    return res.status(200).json(otpId);
+    if(password == confirmPassword){
+      updatePasswordModal(password, user);
+    }
 
   }else{
     return res.status(403).json({ success: true, message: "User not found" });

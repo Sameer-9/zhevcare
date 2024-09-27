@@ -45,6 +45,6 @@ export const otpModal = async (id, otp, user) => {
 export const updatePasswordModal = async (password, user ) => {
   const data = await sql`UPDATE public.user u
                             SET password = ${password}
-                            WHERE u.phone = ${user.phone} AND u.active = true;`;
+                            WHERE u.phone = ${user} AND u.active = true;`;
   return data[0];
 };
