@@ -3,6 +3,7 @@ import argon2 from "argon2";
 import { findOne, insertOTPModal, otpModal, save } from "../models/user.js";
 import redisClient from "../config/redis.js";
 import { verifyRegistrationNo } from "../services/index.js";
+import { sendEmail } from "../services/mail.service.js";
 
 /**
  * Utility function to generate JWT
@@ -212,6 +213,7 @@ export const forgotPassword = async (req, res) => {
   if(user) {
     let otp = Math.floor(100000 + Math.random() * 900000);
     let otpId = insertOTPModal(otp, phone, 'forgot_password');
+    sendEmail('akash.gadhave.ext@nmims.edu','One Time Password', otpId)
     return res.status(200).json(otpId);
 
   }else{
