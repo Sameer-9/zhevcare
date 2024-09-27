@@ -228,6 +228,8 @@ export const changePassword = async (req, res) => {
   if(user) {
     if(password == confirmPassword){
       updatePasswordModal(password, user);
+    }else{
+      return res.status(403).json({ success: true, message: "Password do not Match" });
     }
 
   }else{
