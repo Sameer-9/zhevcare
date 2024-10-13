@@ -16,6 +16,7 @@
     "express": "^4.19.2",
     "express-useragent": "^1.0.15",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.15",
     "postgres": "^3.4.4",
     "redis": "^4.7.0",
     "zhevcare": "file:"

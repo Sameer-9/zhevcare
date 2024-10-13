@@ -36,15 +36,15 @@ export const insertOTPModal = async (OTP, user, serviceName ) => {
   return data[0];
 };
 
-export const otpModal = async (id, otp, user) => {
-  const data = await sql`SELECT true FROM otp WHERE id = ${id} 
-                          AND valid_till > NOW() AND create_by = ${user} AND otp = ${otp}`;
+export const otpModal = async (id, otp) => {
+  const data = await sql`SELECT phone FROM otp WHERE id = ${id} 
+                          AND valid_till < NOW() AND otp = ${otp}`;
   return data;
 };
 
 export const updatePasswordModal = async (password, user ) => {
   const data = await sql`UPDATE public.user u
                             SET password = ${password}
-                            WHERE u.phone = ${user.phone} AND u.active = true;`;
+                            WHERE u.phone = ${user} AND u.active = true;`;
   return data[0];
 };

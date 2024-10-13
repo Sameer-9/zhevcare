@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
-import { findOne, insertOTPModal, otpModal, save } from "../models/user.js";
+import { findOne, insertOTPModal, otpModal, save, updatePasswordModal } from "../models/user.js";
 import redisClient from "../config/redis.js";
 import { verifyRegistrationNo } from "../services/index.js";
+import { sendEmail } from "../services/mail.service.js";
 
 /**
  * Utility function to generate JWT
@@ -212,6 +213,7 @@ export const forgotPassword = async (req, res) => {
   if(user) {
     let otp = Math.floor(100000 + Math.random() * 900000);
     let otpId = insertOTPModal(otp, phone, 'forgot_password');
+    sendEmail('akash.gadhave.ext@nmims.edu','One Time Password', otpId)
     return res.status(200).json(otpId);
 
   }else{
@@ -220,12 +222,14 @@ export const forgotPassword = async (req, res) => {
 }
 
 export const changePassword = async (req, res) => {
-  const { otp, id, password, confirmPassword, user } = req.body;
-  const otpId = otpModal(id, otp, )
-  if(user) {
-    let otp = Math.floor(100000 + Math.random() * 900000);
-    let otpId = insertOTP(otp, phone, 'forgot_password');
-    return res.status(200).json(otpId);
+  const { otp, id, password, confirmPassword } = req.body;
+  const phone = otpModal(id, otp);
+  if(phone) {
+    if(password == confirmPassword){
+      updatePasswordModal(password, phone[0].phone);
+    }else{
+      return res.status(403).json({ success: true, message: "Password do not Match" });
+    }
 
   }else{
     return res.status(403).json({ success: true, message: "User not found" });
