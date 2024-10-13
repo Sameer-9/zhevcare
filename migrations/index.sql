@@ -49,6 +49,7 @@ CREATE TABLE prescription_list(
 	id BIGSERIAL PRIMARY KEY,
 	prescription_master_lid INT NOT NULL,
 	description TEXT NOT NULL,
+  med_durations VARCHAR(255) NOT NULL,
 	medicine_name VARCHAR(255) NOT NULL,
 	timings JSONB NOT NULL,
 	created_by VARCHAR(20) NOT NULL,
@@ -100,12 +101,13 @@ BEGIN
     FOR prescription IN SELECT * FROM jsonb_array_elements(data->'prescription')
     LOOP
         INSERT INTO prescription_list (
-            prescription_master_lid, description, medicine_name, timings, created_by, modified_by
+            prescription_master_lid, description, medicine_name, med_durations,timings, created_by, modified_by
         )
         VALUES (
             master_id,
             prescription->>'prescription_detail',
             prescription->>'medicine_name',
+            prescription->>'med_durations',
             prescription->'timing',
             created_by,
             created_by
@@ -141,11 +143,13 @@ SELECT * FROM insert_prescription_data(
     {
       "prescription_detail" : "xyz",
       "medicine_name" : "abc",
+      "med_durations" : "20"
       "timing":[{"breakfast" : "before"}, {"lunch":null},{"dinner":"after"}]
     },
     {
       "prescription_detail" : "xabc",
       "medicine_name" : "axyz",
+      "med_durations" : "20"
       "timing":[{"breakfast" : "before"}, {"lunch":null},{"dinner":"after"}]
     }
   ],

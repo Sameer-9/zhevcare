@@ -18,7 +18,8 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.15",
     "postgres": "^3.4.4",
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "zhevcare": "file:"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"

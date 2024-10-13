@@ -1,3 +1,4 @@
+import sql from "../config/db.js";
 import { infiniteScrollQueryBuilderWithPlaceholder } from "../utils/db/db-helper.js";
 
 export const getHistory = async ({ cursor, search = "", filters }) => {
@@ -10,13 +11,16 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
                         pm.illness,
                         json_agg(
                             json_build_object(
-                                'report_name', r.name,
-                                'report_url', r.report_path
+                              'report_name', r.name,
+                              'report_url', r.report_path,
+                              'timings', pl.timings,
+                              'med_durations' , pl.med_durations
                             )
                         ) AS reports
                     FROM prescription_master pm
                     JOIN prescription_list pl ON pm.id = pl.prescription_master_lid
                   LEFT JOIN report r ON pm.id = r.prescription_master_lid
+                  INNER JOIN public.user pu ON pu.phone = pm.created_by
 
                     $PLACEHOLDER `,
     placeholders: [
@@ -40,6 +44,7 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
           "pm.created_by",
           "pm.created_date",
           "pm.name",
+          "pu.name"
         ],
         orderBy: {
           column: "pm.id",
