@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 app.get('/ping', (req, res) => {
 	res.send('pong');
-}
+})
 
 // Routes
 app.use('/api', routes);
