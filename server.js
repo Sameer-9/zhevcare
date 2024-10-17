@@ -24,6 +24,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/ping', (req, res) => {
+	res.send('pong');
+}
+
 // Routes
 app.use('/api', routes);
 
