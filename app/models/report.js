@@ -34,6 +34,7 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
           "pm.created_date": filters.date,
           "pm.phone": filters.phone,
           "pm.created_by": filters.session_phone,
+          "pm.phone": filters.session_phone,
         },
         orderBy: { column: "pm.created_date", order: "desc" },
         defaultFilters: ` WHERE pm.active = TRUE
