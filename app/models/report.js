@@ -14,7 +14,8 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
                               'report_name', r.name,
                               'report_url', r.report_path,
                               'timings', pl.timings,
-                              'med_durations' , pl.med_durations
+                              'med_durations' , pl.med_durations,
+                              'med_name', pl.medicine_name
                             )
                         ) AS reports
                     FROM prescription_master pm
