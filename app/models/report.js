@@ -21,7 +21,7 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
                     FROM prescription_master pm
                     JOIN prescription_list pl ON pm.id = pl.prescription_master_lid
                   LEFT JOIN report r ON pm.id = r.prescription_master_lid
-                  INNER JOIN public.user pu ON pu.phone = pm.created_by
+                  INNER JOIN public.user pu ON pu.phone = pm.created_by OR pu.phone = pm.phone
 
                     $PLACEHOLDER `,
     placeholders: [
@@ -29,12 +29,11 @@ export const getHistory = async ({ cursor, search = "", filters }) => {
         placeholder: "$PLACEHOLDER",
         filters: {
           "pm.name": filters.name,
-          "pm.created_by": filters.doctor_name,
           "pl.illness": filters.illness,
           "pm.created_date": filters.date,
           "pm.phone": filters.phone,
-          "pm.created_by": filters.session_phone,
-          "pm.phone": filters.session_phone,
+          // "pm.created_by": filters.session_phone,
+          "pu.phone": filters.session_phone,
         },
         orderBy: { column: "pm.created_date", order: "desc" },
         defaultFilters: ` WHERE pm.active = TRUE
